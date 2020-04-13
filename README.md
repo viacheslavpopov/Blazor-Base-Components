@@ -1,2 +1,2 @@
 # Blazor Base Components
-Inheritable components that represent common members among our various Blazor components.
+Abstract components that provide a common member base to our various Blazor component types.
