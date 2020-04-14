@@ -20,7 +20,7 @@ The design and development of this shared Blazor component library was heavily g
 This library allows common members (properties and event callbacks) and functionality (keeping state) to be shared across all of our current Blazor components and any future ones as well.
 
 ## Getting Started
-1. Add [Nuget](https://www.nuget.org/packages/Mobsites.Blazor.MaterialDesign.AppDrawer/) package:
+1. Add [Nuget](https://www.nuget.org/packages/Mobsites.Blazor.BaseComponents/) package:
 
 ```shell
 dotnet add package Mobsites.Blazor.BaseComponents --version 1.0.0-preview1
