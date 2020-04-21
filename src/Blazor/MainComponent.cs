@@ -3,15 +3,20 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace Mobsites.Blazor
 {
     /// <summary>
-    /// Abstract stateful base for a main component in Blazor.
+    /// Abstract base for a useful UI component.
     /// </summary>
-    public abstract class MainComponent : BaseComponent, IParentComponentBase
+    public abstract class MainComponent : BaseComponent<IParentComponentBase>, IParentComponentBase
     {
+        /****************************************************
+        *
+        *  PUBLIC INTERFACE
+        *
+        ****************************************************/
+
         private string style;
 
         /// <summary>
@@ -21,13 +26,24 @@ namespace Mobsites.Blazor
         { 
             get 
             {
-                string color = string.IsNullOrWhiteSpace(this.Color) ? null : $"color: {this.Color};";
+                string color = string.IsNullOrWhiteSpace(this.Color) 
+                    ? null 
+                    : $"color: {this.Color};";
+                string backgroundColor = string.IsNullOrWhiteSpace(this.BackgroundColor) 
+                    ? null 
+                    : $"background: {this.BackgroundColor};";
+                string image = string.IsNullOrWhiteSpace(this.BackgroundImage) 
+                    ? backgroundColor 
+                    : $"background: url('{this.BackgroundImage}') no-repeat center/cover;";
+                string gradient = string.IsNullOrWhiteSpace(this.BackgroundColorStart) || string.IsNullOrWhiteSpace(this.BackgroundColorEnd)
+                    ? backgroundColor 
+                    : $"background: linear-gradient({(int)(this.BackgroundColorDirection)}deg, {this.BackgroundColorStart} 0%, {this.BackgroundColorEnd} 70%);";
                 string background = BackgroundMode switch
                 {
                     BackgroundModes.None => null,
-                    BackgroundModes.Image => $"background: url('{this.BackgroundImage}') no-repeat center;",
-                    BackgroundModes.Gradient => $"background: linear-gradient({(int)(this.BackgroundColorDirection)}deg, {this.BackgroundColorStart} 0%, {this.BackgroundColorEnd} 70%);",
-                    _ => $"background: {this.BackgroundColor};"
+                    BackgroundModes.Image => image,
+                    BackgroundModes.Gradient => gradient,
+                    _ => backgroundColor
                 };
 
                 return background + color + style;
@@ -44,63 +60,32 @@ namespace Mobsites.Blazor
         /// </summary>
         [Parameter] public override ContrastModes ContrastMode
         {
-            get => this.BackgroundMode switch
-            {
-                BackgroundModes.Dark => ContrastModes.Dark,
-                BackgroundModes.Light => ContrastModes.Light,
-                _ => ContrastModes.Normal
-            };
+            get => this.Parent is null
+                ? this.BackgroundMode switch
+                {
+                    BackgroundModes.Dark => ContrastModes.Dark,
+                    BackgroundModes.Light => ContrastModes.Light,
+                    _ => ContrastModes.Normal
+                }
+                : this.Parent.ContrastMode;
             set => contrastMode = value;
-        } 
-
-        private string color;
-
-        /// <summary>
-        /// The foreground color for this component. Accepts any valid css color usage.
-        /// </summary>
-        [Parameter] public override string Color 
-        { 
-            get => BackgroundMode switch
-            {
-                BackgroundModes.Dark => DarkModeColor,
-                BackgroundModes.Light => LightModeColor,
-                _ => color
-            };
-            set => color = value; 
         }
-
-        private string backgroundColor;
 
         /// <summary>
         /// The background color for this component. Accepts any valid css color usage.
         /// </summary>
         [Parameter] public override string BackgroundColor
-        { 
-            get => BackgroundMode switch
-            {
-                BackgroundModes.Dark => DarkModeBackgroundColor,
-                BackgroundModes.Light => LightModeBackgroundColor,
-                _ => backgroundColor
-            };
-            set => backgroundColor = value; 
+        {
+            get => BackgroundMode == BackgroundModes.None ? null : base.BackgroundColor;
+            set => base.BackgroundColor = value;
         }
-
-        /// <summary>
-        /// The style of background to apply.
-        /// </summary>
-        [Parameter] public BackgroundModes BackgroundMode { get; set; }
-
-        /// <summary>
-        /// Call back event for notifying another component that this property changed. 
-        /// </summary>
-        [Parameter] public EventCallback<BackgroundModes> BackgroundModeChanged { get; set; }
 
         private string backgroundImage;
         
         /// <summary>
         /// Background image source. Set BackgroundMode to Image for usage.
         /// </summary>
-        [Parameter] public string BackgroundImage 
+        [Parameter] public virtual string BackgroundImage 
         { 
             get => backgroundImage; 
             set 
@@ -115,120 +100,76 @@ namespace Mobsites.Blazor
         /// <summary>
         /// The direction of background color flow. Set BackgroundMode to Gradient for usage.
         /// </summary>
-        [Parameter] public BackgroundColorDirections BackgroundColorDirection { get; set; }
+        [Parameter] public virtual BackgroundColorDirections BackgroundColorDirection { get; set; }
 
         /// <summary>
         /// Call back event for notifying another component that this property changed. 
         /// </summary>
-        [Parameter] public EventCallback<BackgroundColorDirections> BackgroundColorDirectionChanged { get; set; }
+        [Parameter] public virtual EventCallback<BackgroundColorDirections> BackgroundColorDirectionChanged { get; set; }
 
         /// <summary>
         /// The gradient start color for this component. Accepts any valid css color usage.
         /// Set BackgroundMode to Gradient for usage.
         /// </summary>
-        [Parameter] public string BackgroundColorStart { get; set; }
+        [Parameter] public virtual string BackgroundColorStart { get; set; }
 
         /// <summary>
         /// Call back event for notifying another component that this property changed. 
         /// </summary>
-        [Parameter] public EventCallback<string> BackgroundColorStartChanged { get; set; }
+        [Parameter] public virtual EventCallback<string> BackgroundColorStartChanged { get; set; }
 
         /// <summary>
         /// The gradient end color for this component. Accepts any valid css color usage.
         /// Set BackgroundMode to Gradient for usage.
         /// </summary>
-        [Parameter] public string BackgroundColorEnd { get; set; }
+        [Parameter] public virtual string BackgroundColorEnd { get; set; }
 
         /// <summary>
         /// Call back event for notifying another component that this property changed. 
         /// </summary>
-        [Parameter] public EventCallback<string> BackgroundColorEndChanged { get; set; }
+        [Parameter] public virtual EventCallback<string> BackgroundColorEndChanged { get; set; }
 
-        /// <summary>
-        /// The background color for this component's dark mode. Default is rgba(0, 0, 0, 0.92).
-        /// Accepts any valid css color usage.
-        /// </summary>
-        [Parameter] public override string DarkModeBackgroundColor { get; set; } = "rgba(0, 0, 0, 0.92)";
 
-        /// <summary>
-        /// The foreground color for this component's dark mode. Default is rgba(255, 255, 255, 1).
-        /// Accepts any valid css color usage.
-        /// </summary>
-        [Parameter] public override string DarkModeColor { get; set; } = "rgba(255, 255, 255, 1)";
 
-        /// <summary>
-        /// The background color for this component's light mode. Default is rgba(255, 255, 255, 1).
-        /// Accepts any valid css color usage.
-        /// </summary>
-        [Parameter] public override string LightModeBackgroundColor { get; set; } = "rgba(255, 255, 255, 1)";
+        /****************************************************
+        *
+        *  NON-PUBLIC INTERFACE
+        *
+        ****************************************************/
 
-        /// <summary>
-        /// The foreground color for this component's light mode. Default is rgba(0, 0, 0, 0.92).
-        /// Accepts any valid css color usage.
-        /// </summary>
-        [Parameter] public override string LightModeColor { get; set; } = "rgba(0, 0, 0, 0.92)";
-
-        /// <summary>
-        /// Whether this component should store state in browser storage.
-        /// </summary>
-        [Parameter] public bool KeepState { get; set; }
-
-        /// <summary>
-        /// Whether this component should use session storage to keep state. Default is local storage.
-        /// </summary>
-        [Parameter] public bool UseSessionStorageForState { get; set; }
-
-        /// <summary>
-        /// Injected JavaScript interop.
-        /// </summary>
-        [Inject] protected IJSRuntime jsRuntime { get; set; }
-
-        /// <summary>
-        /// Access to storage in browser.
-        /// </summary>
-        protected Storage Storage { get; set; }
-
-        protected override void OnInitialized()
+        protected void SetOptions(MainComponentOptions options)
         {
-            Storage = new Storage(jsRuntime);
-        }
-
-        protected void SetOptions(OptionsBase options)
-        {
-            options.Color = this.Color;
-            options.BackgroundMode = this.BackgroundMode;
-            options.BackgroundColor = this.BackgroundColor;
             options.BackgroundColorDirection = this.BackgroundColorDirection;
             options.BackgroundColorStart = this.BackgroundColorStart;
             options.BackgroundColorEnd = this.BackgroundColorEnd;
+
+            base.SetOptions(options);
         }
 
-        protected async Task CheckState(OptionsBase options)
+        protected async Task<bool> CheckState(MainComponentOptions options)
         {
-            if (this.Color != options.Color)
+            bool stateChanged = false;
+
+            if (this.BackgroundColorDirection != (options.BackgroundColorDirection ?? BackgroundColorDirections.BottomToTop))
             {
-                await this.ColorChanged.InvokeAsync(options.Color);
-            }
-            if (this.BackgroundMode != options.BackgroundMode)
-            {
-                await this.BackgroundModeChanged.InvokeAsync(options.BackgroundMode);
-            }
-            if (this.BackgroundColor != options.BackgroundColor)
-            {
-                await this.BackgroundColorChanged.InvokeAsync(options.BackgroundColor);
-            }
-            if (this.BackgroundColorDirection != options.BackgroundColorDirection)
-            {
-                await this.BackgroundColorDirectionChanged.InvokeAsync(options.BackgroundColorDirection);
+                this.BackgroundColorDirection = options.BackgroundColorDirection ?? BackgroundColorDirections.BottomToTop;
+                await this.BackgroundColorDirectionChanged.InvokeAsync(this.BackgroundColorDirection);
+                stateChanged = true;
             }
             if (this.BackgroundColorStart != options.BackgroundColorStart)
             {
-                await this.BackgroundColorStartChanged.InvokeAsync(options.BackgroundColorStart);
+                this.BackgroundColorStart = options.BackgroundColorStart;
+                await this.BackgroundColorStartChanged.InvokeAsync(this.BackgroundColorStart);
+                stateChanged = true;
             }
             if (this.BackgroundColorEnd != options.BackgroundColorEnd)
             {
-                await this.BackgroundColorEndChanged.InvokeAsync(options.BackgroundColorEnd);
+                this.BackgroundColorEnd = options.BackgroundColorEnd;
+                await this.BackgroundColorEndChanged.InvokeAsync(this.BackgroundColorEnd);
+                stateChanged = true;
             }
+
+            return await base.CheckState(options) || stateChanged;
         }   
     }
 }

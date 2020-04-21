@@ -8,10 +8,10 @@ namespace Mobsites.Blazor
 {
     /// <summary>
     /// Abstract base for a UI component that exists solely for the benefit of its specified parent,
-    /// which must implement the <see cref="IParentComponentBase" /> interface.
+    /// which must inherit the <see cref="MainComponent" /> base.
     /// </summary>
-    public abstract class ChildComponent<T> : BaseComponent<T>, IParentComponentBase
-        where T : IParentComponentBase
+    public abstract class Subcomponent<T> : BaseComponent<T>, IParentComponentBase
+        where T : MainComponent
     {
         /****************************************************
         *
@@ -28,14 +28,14 @@ namespace Mobsites.Blazor
         /// Call back event for notifying another component that this property changed. 
         /// </summary>
         protected new EventCallback<BackgroundModes> BackgroundModeChanged { get; set; }
-        
+
         protected override void OnParametersSet()
         {
             if (Parent is null)
             {
                 throw new ArgumentNullException(
                     nameof(Parent), 
-                    $"This component must nested in a parent component of type {typeof(T).Name}!");
+                    $"This component must be nested in a parent component of type {typeof(T).Name}!");
             }
         }
     }

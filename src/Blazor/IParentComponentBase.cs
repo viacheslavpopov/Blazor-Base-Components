@@ -4,7 +4,7 @@
 namespace Mobsites.Blazor
 {
     // <summary>
-    /// Interface describing members a parent component should have.
+    /// Interface describing members a parent UI component should have.
     /// </summary>
     public interface IParentComponentBase
     {

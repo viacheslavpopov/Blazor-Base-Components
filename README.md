@@ -11,8 +11,8 @@ Abstract components that provide a common member base to our various Blazor comp
 ## Dependencies
 
 ###### .NETStandard 2.0
-* Microsoft.AspNetCore.Components (>= 3.1.2)
-* Microsoft.AspNetCore.Components.Web (>= 3.1.2)
+* Microsoft.AspNetCore.Components (>= 3.1.3)
+* Microsoft.AspNetCore.Components.Web (>= 3.1.3)
 
 ## Design and Development
 The design and development of this shared Blazor component library was heavily guided by Microsoft's [Steve Sanderson](https://blog.stevensanderson.com/). He outlines a superb approach to building and deploying a reusable component library in this [presentation](https://youtu.be/QnBYmTpugz0) and [example](https://github.com/SteveSandersonMS/presentation-2020-01-NdcBlazorComponentLibraries).
@@ -23,37 +23,35 @@ This library allows common members (properties and event callbacks) and function
 1. Add [Nuget](https://www.nuget.org/packages/Mobsites.Blazor.BaseComponents/) package:
 
 ```shell
-dotnet add package Mobsites.Blazor.BaseComponents --version 1.0.0-preview1
+dotnet add package Mobsites.Blazor.BaseComponents --version 1.0.0
 ```
 
 2. Choose a component base to inherit and use it to provide the basis for your next Blazor component.
 
 ## Recommendations
 ```c#
+public abstract class StatefulComponent
+```
+Use this as the base of a top-level UI component that is self-contained and may need to keep state for itself or any of its dependents (if any).
+
+```c#
 public abstract class MainComponent
 ```
-Use this as the base of a component that is self-contained, may need to keep state, and is likely to have dependents. An example is `<AppDrawer>`.
+Use this as the base of a top-level UI component that is self-contained but does not need to keep state for itself or any of its dependents (if any).
 
 ```c#
-public abstract class OrphanComponent<T> where T : MainComponent
+public abstract class Subcomponent<T> where T : MainComponent
 ```
-Use this as the base of a component that is self-contained, may need to keep state, may or may not have dependents, but is likely to be used in other main components. This allows such a component to pick up on state changes, such as dark or light mode, automagically when nested in other main components. An example is `<Button>` or `<Icon>`.
+Use this as the base of a UI component that functions as a descendant to one of the above and does not make sense to be used on its own.
 
 ```c#
-public abstract class ChildComponent<T> where T : MainComponent
+public abstract class ChildComponent<T> where T : IParentComponentBase
 ```
-
-Use this for a dependent that **must** be a descendant to the main component that you are building, and is likely itself to have children. An example is `<AppDrawerContent>`.
-
-```c#
-public abstract class GrandChildComponent<T> where T : IParentComponentBase
-```
-
-Use this for a dependent that **must** be a descendant of one of the above and is unlikely to have children. An example is `<AppDrawerContentDivider>`.
+Use this as the base of a UI component that functions as a descendant to a `Subcomponent` or another `ChildComponent` and does not make sense to be used on its own.
 
 ```c#
 public abstract class WrapperComponent
 ```
-Use this as the base of a component that is necessary to enforce css rules or other arrangements outside of the main component with which it is associated. An example is `<AppContent>`.
+Use this as the base of a component that is needed to wrap or contain content outside of the main UI component with which it is associated.
 
 ***All other component bases in this library are for the foundation of all of the above, and, therefore, should not be used as a direct base for your component unless there is a use case that is not supported above.***
