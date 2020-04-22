@@ -22,7 +22,8 @@ namespace Mobsites.Blazor
         *
         *   Caveat: If the options are passed into a javascript function,
         *   then, obviously, any such members depended on there will have to 
-        *   be accounted for there as not defined.
+        *   be accounted for there as not defined or null and, thus,
+        *   equivalent to zero.
         *
         ***********************************************************************/
 

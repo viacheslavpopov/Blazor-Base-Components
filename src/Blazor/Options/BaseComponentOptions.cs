@@ -1,8 +1,6 @@
 // Copyright (c) 2020 Allan Mobley. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-using System;
-
 namespace Mobsites.Blazor
 {
     /// <summary>
@@ -24,7 +22,8 @@ namespace Mobsites.Blazor
         *
         *   Caveat: If the options are passed into a javascript function,
         *   then, obviously, any such members depended on there will have to 
-        *   be accounted for there as not defined.
+        *   be accounted for there as not defined or null and, thus,
+        *   equivalent to zero.
         *
         ***********************************************************************/
 
