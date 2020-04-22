@@ -51,6 +51,7 @@ namespace Mobsites.Blazor
             Storage = new Storage(jsRuntime);
         }
 
-        protected string GetKey(string nameOfComponent) => string.IsNullOrWhiteSpace(Id) ? nameOfComponent : $"{nameOfComponent}.{Id}";
+        protected string GetKey<T>()
+            where T : StatefulComponent => string.IsNullOrWhiteSpace(Id) ? typeof(T).Name : $"{typeof(T).Name}.{Id}";
     }
 }
