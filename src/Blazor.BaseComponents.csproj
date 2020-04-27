@@ -14,8 +14,8 @@
     <IsPackable>true</IsPackable>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>mobsites-logo.png</PackageIcon>
-    <PackageReleaseNotes>Official release.</PackageReleaseNotes>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageReleaseNotes>Removed setting of all contrast modes on color set.</PackageReleaseNotes>
+    <PackageVersion>1.0.1</PackageVersion>
     <PackageTags>blazor;component;base;abstract;</PackageTags>
     <PackageProjectUrl>https://www.mobsites.com</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
