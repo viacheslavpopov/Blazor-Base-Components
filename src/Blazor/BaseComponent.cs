@@ -115,23 +115,7 @@ namespace Mobsites.Blazor
                         ? this.Parent.Color
                         : color
                 };
-            set
-            {
-                value = string.IsNullOrWhiteSpace(value) ? null : value;
-
-                switch (ContrastMode)
-                {
-                    case ContrastModes.Dark:
-                        this.DarkModeColor = value;
-                        break;
-                    case ContrastModes.Light:
-                        this.LightModeColor = value;
-                        break;
-                    default:
-                        color = value;
-                        break;
-                }
-            }
+            set => color = string.IsNullOrWhiteSpace(value) ? null : value;
         }
 
         /// <summary>
@@ -175,23 +159,7 @@ namespace Mobsites.Blazor
                         ? this.Parent.BackgroundColor
                         : backgroundColor
                 };
-            set
-            {
-                value = string.IsNullOrWhiteSpace(value) ? null : value;
-
-                switch (ContrastMode)
-                {
-                    case ContrastModes.Dark:
-                        this.DarkModeBackgroundColor = value;
-                        break;
-                    case ContrastModes.Light:
-                        this.LightModeBackgroundColor = value;
-                        break;
-                    default:
-                        backgroundColor = value;
-                        break;
-                }
-            }
+            set => backgroundColor = string.IsNullOrWhiteSpace(value) ? null : value;
         }
         
         /// <summary>
@@ -297,7 +265,7 @@ namespace Mobsites.Blazor
 
         public virtual void Dispose()
         {
-            
+            initialized = false;
         }
     }
 }
